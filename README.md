@@ -4,6 +4,8 @@ This project provides a (couple of) hardware designs for interfacing a game
 controller to a rasperry pi (or similar) and automatically measuring the input
 latency.
 
+![test setup](images/test_setup.jpg)
+
 ## What is input latency?
 
 The "input latency" I'm referring to in this document is the amount of time
@@ -23,7 +25,7 @@ This is the sum of all of the following:
 
 > "button" could also mean deflecting a stick.
 
-## PI verses Microcontroller verses PC host
+## Raspberry PI verses Microcontroller Test Setup
 
 Some setups, such as [this one](https://inputlag.science/controller/methodology)
 use microcontroller hardware to handle #1, #3 and #4.  This project uses a
@@ -84,9 +86,11 @@ channels at 10Hz (or 20 inputs per second).  The way this is implemented is to
 toggle GPIO1 every 100ms and GPIO2 every 98ms.  This creates a pattern that
 looks like this:
 
-[GPIO Pattern](images/gpio_pattern.png)
+![GPIO Pattern](images/gpio_pattern.png)
 
 ## Interpreting the results
+
+![GP2040 results](images/gp2040_results.jpg)
 
 The reported statistics will be as follows:
 
@@ -99,10 +103,8 @@ The reported statistics will be as follows:
 
 ### What is "bad" latency?
 
-At 60 Hz, a video frame is (around 16ms).  So if your controller latency is
->16ms, then you will lose a frame due to the controller every time.  If your
->latency is 8ms, you will
-lose a frame about half the time, and so on.
+At 60 Hz, a video frame is (around 16ms).  So if your controller latency is > 16ms, then you will lose a frame due to the controller every time.  If your
+latency is 8ms, you will lose a frame about half the time, and so on.
 
 As far as how important a missed frame is, I invite you to draw your own
 conclusions.  But here are some sources:
@@ -111,7 +113,7 @@ conclusions.  But here are some sources:
 humans to be around 200ms on average.
 
 But there is more to gaming that pure reaction.  Most games offer "cues" or
-"tells" that are followed by predictable patterns.  Some games, are fully
+"tells" that are followed by predictable patterns.  Some games are fully
 predictable, like playing a song.  When events can be predicted and tracked, it
 becomes less about reaction time and more about "temporal precision".
 [This particular study](https://jov.arvojournals.org/article.aspx?articleid=2213289)
@@ -140,6 +142,10 @@ protection designs: optocoupler based, and NFET based.
 
 ### NFET Design
 
+![NFET Design](images/nfet_design.png)
+[Playground Link](http://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxAUgoqoQFMBaMMAKACURjCRMUQAWPDwx8qVflWzRsUWTAQsA5uEKSEfMKoFw5LAE4hs6w8f6F+J0TzQsA7gPM88QsxaOiWAZ07deKqn5UEABmAIYANp50+oaQFn64bsZB8HB2sfEilsIe9onZ7tmQLABGFFlgmDzY3PwoMsU1QgjEGlotfFy6TRSt2R3aYlAs2Bi0fZrijpPg3WO9fIUI-EkaugAeAmYCYLTLOzLxFgAudJ7HADqeAMYAlnrXAK63xyyb-MQyYAQUhOTfSAsmhAJUex2OAHsAHYAfQADrcoW8BBhuNgqggSIZcAIVCBbPc6OEzp4YYooQATdggHDcPBUWmGKziWhyKDQBQGRn0mk1fyySjwdKMmYDGbFMp-PiOPBgYjgYgWYqbEgQb50lBqvDyo74wkUq6g8HQljBHa+LKuHJM8Ac9mQFAxQp+fjAwLINKbTUQQjfbHSzW4lAWACqAGUAEJXOEQ2x0PSlBV8D5o7DywhEYb2FCYhbgSp54ocHPcAYlhxK2QSahDeQsABuNOMqiEGGM6iEQ2rSFrHMTf3IlCQBAshCMWab0vwIEIuZbwxVnxnOII3DHhx4VAJeiJJMNYMhSK57ZQQlnpdPAtS6StMyt5eKBitSxWRWsyoEo2XtCx66DW8JYlPE8aNY3jG8unnCQqHnCUBEDIdfjPcdikbFMZ2ndCOzZbs2TrewsMvaCKEvD8iP4L5HBWWo8TYUJPDhEp4z0ABPK4AAVbiuABxdiAEkAHlEzAQ4PnAPByHqeVinsGYEjia0ZIybIZkKYogA)
+
+
 The NFET design has the advantage of easier hookup and faster operation.  The
 disadvantage is that it will only work with ["pull up
 resistor"](https://learn.sparkfun.com/tutorials/pull-up-resistors/all) style
@@ -153,6 +159,9 @@ cable (on USB controllers) can be used as the ground connection for the
 test - this simplifies wiring and eliminates some types of wiring errors.
 
 ### Opcocoupler Design
+
+![Optocoupler Design](images/optocoupler_design.png)
+[Playground Link](http://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxAUgoqoQFMBaMMAKACVxCq09wwUQPKMIAsVbNGzCqMBCwDm4DIUF5eYZSGzYVMlgHcQI4ipRijJ1b0gsAzp275B5oVQgAzAIYAbW3RYARiBc5IQighgQOno6vIRmgk7x4WAi4TGEcQkoasEJ2rpQLNgYVMmJvMamThAxpXnhObwImk3g0iwAHkYYvNgiKgh4Kv3ERs4gAC50tpMAOrYAxgCWAE6LAK7Lk10UKEjMzaTgKBApKgEbk5MA9gB2APoADst3u5S8RFJcEEQq5yB9Gs6N4ZrYHvI7gATFirLQ6CpGOCI8S4FgANxAyma-CxmSM2AEMiR1GJskCwWIUjEYzw5gQ2DGNkM2IJAkIGAEIkJRW6JCkDPCeG0FBK4zQICeG283ihN30dwWl2u91heJx7M5FFxtHgNjhVSsFFauVRNm6lAgguC2GaYsaVFWdHRdFWfihCye8tdBgoXG1XLCAaKQREeCQNJtAgZTIxfqo3Oj-oQOtEtGkUGgckMCH9iaMQfzNjE5DEjkqliErEMZecCeRbWZSO4uQKRqb2AQXJ5+3+PJsmM70dxQ7ZGfpGfJQUwpcgYxECRjRUMo5TAl7wfNgipovC-XIDNLiUl3tWas55YaKJo8F2hEIUTAVCwSGwYGpx6lMo2TyVV1ubwshKbTlI2FJhAc4ZYsQAhvkgA5YsBuQXte9aktIWYKOqwZ4Mia4dIoKFtBgXbtkUiiriOdKbuR8ZjggMFjnoK4Im0GimKavpmJebauLsJFaDgggjpoAJsJ4thPAErqrAAngsAAKACSCwAOLKQA8hS3FaNR8RKLGQA)
 
 The optocoupler based design will work with either pull up or pull down
 configuratons, but you need to known which way the current flows through the
