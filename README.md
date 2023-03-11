@@ -176,7 +176,32 @@ Going forward, I'll assume we are going with the NFET design.  If you need
 the optocoupler one, then your hardware build will be different but the
 softare you run will be the same.
 
-## Hookup example
+## Board Design
+
+In the [latency_schematic/](latency_schematic) directory, I put together a
+schematic of the NFET design:
+
+![nfet schematic](images/nfet_schematic.png)
+
+Ad well as a PCB layout that you can hand-wire, CNC cut, checmical etch or send
+to a fab.
+
+![pcb layout](images/pcb_layout.png)
+
+Here is my finished hardware:
+
+![finished hardware](images/finished_hardware.jpg)
+
+## Hardware Hookup
+
+Here is the hardware connected to a Mayflash F500 arcade stick:
+
+![hookup](images/hookup.jpg)
+
+One wire for each GPIO.  There is no need to connect a ground wire in this case
+because there is a ground connection from the USB connection.  If this were
+a wireless controller, then the additional ground wire would need to be
+connected.
 
 ## Software Tools
 
@@ -233,6 +258,3 @@ This version uses GPIO6 and GPIO22, toggling them in overlapping ways.  Usage
 is again simple:
 
     ./multichannel_latency_test
-
-### Example Results
-
