@@ -183,7 +183,7 @@ schematic of the NFET design:
 
 ![nfet schematic](images/nfet_schematic.png)
 
-Ad well as a PCB layout that you can hand-wire, CNC cut, checmical etch or send
+As well as a PCB layout that you can hand-wire, CNC cut, chemical etch or send
 to a fab.
 
 ![pcb layout](images/pcb_layout.png)
