@@ -258,3 +258,38 @@ This version uses GPIO6 and GPIO22, toggling them in overlapping ways.  Usage
 is again simple:
 
     ./multichannel_latency_test
+
+## Taking It Further - Video Latency
+
+With additional work, we can measure the latency from pushing a button all the
+way to seeing something happen on the screen.  This takes the current latency
+sources and adds the video pipeline and any processing the monitor may be doing.
+
+> I'll just say that if you are connected to a TV, make sure it's in "game mode"
+> to potentially avoid hundreds of additional ms of latency!
+
+I didn't set this up, but here is a basic recipe for those who might want to:
+
+1. You modify the software tools to draw a white rectangle on an otherwise
+   black screen.
+2. You use either a phototransistor or photodiode, pressed up close to the
+   screen so that it can detect the change without picking up other
+   light.
+3. The phototransistor/photodiode drives a GPIO on the Rasperry PI.  The
+   software monitors that GPIO to collect latency timing information.
+
+Here is a basic phototransistor circuit that would be **combined** with one
+of the circuits above (since you still want the ability to trigger the
+buttons):
+
+![phototransistor](images/phototransistor.png)
+[playground link](http://www.falstad.com/circuit/circuitjs.html?ctz=CQAgjCAMB0l3BWcMBMcUHYMGZIA4UA2ATmIxAUgoqoQFMBaMMAKABcRCUAWEFPPJwwo+AqOBANssYmGwps2BGB7CwxKNDR5CGbsX0JC3IwgTZkVACZ0AZgEMArgBs2LAEohu3Qf0Hc4UUEqKgCJEM0EFgBnCm8gzh4EqggHZ2i6DxA8eXB+bOJCPODxMOkLCJgogHMhEVxeXXqEERCWMD1E3nURJuKJMHgQ6CR3OmiAS2i2ewA7AGNMgCc68EIqPsxWvjQWbEJBTeFsvCot8UgWAHds3JVDpPuoFhWEeL8vH2TLS4AjEGweF4iiKXAgCnIfxAOCKhRAhUEilaLAAHtD9ACFNlCEh5EVeGgQO57NEAA6-OhLJYATwAOtEAAoASVRALh8g063quQJVAAyhMALYuexsOhWekAGQm1QAFmx6XyAPaOJaLVkYYx8QhFPCUbUabpFZWCuj0gDizIA8iwgA)
+
+The potentiometer is used to change the sensitivity of the circuit.  Again, this
+is just a starting point to give you some terms to search for.  Building up the
+circuit above (or an alternate example you find) and testing it on a breadboard
+is recommended before building anying permanent.
+
+If you go with a photodiode, the circuit will be a bit different.  I also found
+some [photodiode modules on Amazon](https://www.amazon.com/uxcell-Photosensitive-Terminals-Detection-Photodiode/dp/B07M8WS8TH) that look
+easy to use.  Another option to consider.
