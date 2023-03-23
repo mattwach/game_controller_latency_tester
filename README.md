@@ -1,8 +1,8 @@
 # game_controller_latency_tester
 
 This project provides a (couple of) hardware designs for interfacing a game
-controller to a rasperry pi (or similar) and automatically measuring the input
-latency.
+controller to a Raspberry PI (or similar) and automatically measuring the input
+latency added by the controller.
 
 ![test setup](images/test_setup.jpg)
 
@@ -18,9 +18,9 @@ This is the sum of all of the following:
       (very fast)
    2. The game controller firmware processing this signal into a USB or
       bluetooth message (varies)
-   3. The host USB/bluetooth hardware receiving the message and notifying the
-      host operating system (usually fast)
-   4. The host operating system handling the message and passing it forward to
+   3. The Raspberry PI USB/bluetooth hardware receiving the message and notifying the
+      OS (usually fast)
+   4. The Raspberry PI OS handling the message and passing it forward to
       the application (usually fast)
 
 > "button" could also mean deflecting a stick.
@@ -41,7 +41,7 @@ advantages as well:
       you could run without a graphical environment or any services.  My own
       tests didn't even bother being careful with this and still got similar
       results as the [microcontroller version](https://inputlag.science/controller/methodology)
-      testing the [GP2040](https://github.com/FeralAI/GP2040) firmware.
+      testing the < 1ms [GP2040](https://github.com/FeralAI/GP2040) firmware.
    2. The Raspberry PI could be argued a more relevant test in some respects
       as it's using the same path that [RetroPie](https://retropie.org.uk/) would use.
    3. Supporting different configurations is much easier with Raspberry PI.
@@ -55,21 +55,20 @@ The needed requirements are GPIO support and USB.  You *could* use a generic
 PC with a USB to GPIO converter to send the needed trigger signals.  Something
 like [this](https://www.adafruit.com/product/2264) or make-your-own with a PI Pico.
 
-> Not using a raspberry pi will likely require some tweaks to the
-> provided source code.
+> Not using a Raspberry pi will likely require some tweaks to the
+> source code provided in this project.
 
-From this point forward, I'll refer to the Raspberry PI as the "host computer"
-in case you opt to use an alternative.
+So in the text below, you can replace "Raspberry PI" with whatever you hapen to be using.
 
 ## Process Overview
 
-   1. The host computer toggles a GPIO and notes the current time in microsecond
+   1. The Raspberry PI toggles a GPIO and notes the current time in microsecond
       resolution.
-   2. The GPIO signl the controller to think a button was pressed (or a stick
-      was deflected)
+   2. The GPIO signal the game controller to sense that a button was pressed (or
+      a stick was deflected)
    3. The controller sends a corresponding USB/Bluetooth message back to the
-      host computer
-   4. Upon receiving the USB/Bluetooth message, the host computer notes how much
+      Raspberry PI.
+   4. Upon receiving the USB/Bluetooth message, the Raspberry PI notes how much
       time has passed since sending the GPIO
 
 1-4 repeats many time (1000 or more) to build up statistics.
@@ -78,19 +77,25 @@ in case you opt to use an alternative.
 
 One test pattern would be to toggle the GPIOs very fast, like 1000 times per
 second.  But since no human player could ever do this, it could be argued that
-the test is for something that can not happen in real use thus poor results
-in these setups might not be reflect the real-world experience.
+poor results in these setups might not be represent a real-world experience.
 
-This tests tries to set up a more "real world" situation but toggling two GPIO
-channels at 10Hz (or 20 inputs per second).  The way this is implemented is to
-toggle GPIO1 every 100ms and GPIO2 every 98ms.  This creates a pattern that
-looks like this:
+The test programs in this project try to set up a more "real world" situation
+but toggling two GPIO channels at 10Hz (or 20 inputs per second).  The way this
+is implemented is to toggle GPIO1 every 100ms and GPIO2 every 98ms.  This
+creates a pattern that looks like this:
 
 ![GPIO Pattern](images/gpio_pattern.png)
+
+The game controller thus has to sometimes handle button being pressed at the
+same time as could sometimes happen in real use.
 
 ## Interpreting the results
 
 ![GP2040 results](images/gp2040_results.jpg)
+
+The image above shows output statistics from `simple_latency_test` and the
+[GP2040](https://github.com/FeralAI/GP2040) firmware, which has excellent
+performance. 
 
 The reported statistics will be as follows:
 
@@ -123,9 +128,9 @@ So it depends on many things but the studies above suggset there are cases
 where low latency "matters" in terms of giving a player an additional advantage
 at some games.
 
-## Hardware
+## Raspberry PI to Game Controller Interface Hardware
 
-Let's start with the most stright-forward hardware approach. You *could* directly
+Let's start with the most straight-forward hardware approach. You *could* directly
 connect a PI GPIO to a controller and in many cases it will work, but
 there are risks:
 
@@ -174,7 +179,7 @@ a handful of ns to turn on/off.
 
 Going forward, I'll assume we are going with the NFET design.  If you need
 the optocoupler one, then your hardware build will be different but the
-softare you run will be the same.
+software you run will be the same.
 
 ## Board Design
 
@@ -208,13 +213,14 @@ connected.
 Most of the tools you will build as a part of this project.  The process is
 to type
 
-    Make
+    make
 
-The standard Raspberry PI image should already contain what you need VERIFY THIS.
+The standard Raspberry PI image should already contain the dependencies that
+you will need.
 
 ### jstest-gtk
 
-These are commonly availabe tools.  e.g. in Ubuntu you can just say
+This is a commonly-availabe tool.  e.g. in Ubuntu you can just say
 
     sudo apt install jstest-gtk
     
@@ -224,7 +230,7 @@ controller is connected and working.  It can also tell you the device number
 
 ### toggle_test
 
-This is a built tool.  You run it like this
+This tool was built when you executed `make`.  You run it like this
 
     ./toggle_test
 
@@ -242,12 +248,12 @@ simple:
 
 The tool assumes the device is `/dev/input/js0`.  This can be changed in `joystick_events.c`
 
-### simple_latncy_test
+### simple_latency_test
 
 This is a single-channel version of the test that only uses GPIO22.  In my
-testing, it gives the best-looking results, especially in standard deviation.
+testing, it gives the lowest latency numbers, especially in standard deviation.
 It works by toggling a gpio, waiting for the response, then toggling another
-one.  So it's a bit easier on teh firmware than `multichannel_latency_test`.
+one.  So it's a bit easier on the firmware than `multichannel_latency_test`.
 Usage is again simple:
 
     ./simple_latency_test
