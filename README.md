@@ -64,7 +64,7 @@ So in the text below, you can replace "Raspberry PI" with whatever you hapen to 
 
    1. The Raspberry PI toggles a GPIO and notes the current time in microsecond
       resolution.
-   2. The GPIO signal the game controller to sense that a button was pressed (or
+   2. The GPIO signals the game controller to sense that a button was pressed (or
       a stick was deflected)
    3. The controller sends a corresponding USB/Bluetooth message back to the
       Raspberry PI.
